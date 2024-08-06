@@ -1,4 +1,7 @@
 
+# REMOVE THIS COMMENT TO RUN PROPERLY 
+
+
 #########################################################################################
 #                               Security HUB Infra Creation                             #
 #########################################################################################
@@ -56,6 +59,74 @@ resource "azurerm_subnet" "azure-hub-trusted" {
   resource_group_name  = azurerm_resource_group.azure-hub-resource-group.name
   virtual_network_name = azurerm_virtual_network.azure-hub-vnet.name
   address_prefixes     = ["${var.hub-privatecidr}"]
+}
+
+#########################################################################################
+#                                  Azure Load Balancers                                 #
+#########################################################################################
+
+# External Load Balancer
+resource "azurerm_public_ip" "fgt-lb-pip" {
+  name                = "FortiGate-LB-PIP"
+  location            = azurerm_resource_group.azure-hub-resource-group.location
+  resource_group_name = azurerm_resource_group.azure-hub-resource-group.name
+  allocation_method   = "Static"
+}
+
+resource "azurerm_lb" "fgt-external-lb" {
+  name                = "External-LB"
+  location            = azurerm_resource_group.azure-hub-resource-group.location
+  resource_group_name = azurerm_resource_group.azure-hub-resource-group.name
+
+  frontend_ip_configuration {
+    name                 = "PublicIPAddress"
+    public_ip_address_id = azurerm_public_ip.fgt-lb-pip.ip_address
+  }
+}
+
+resource "azurerm_lb_backend_address_pool" "external-lb-backend-pool" {
+  loadbalancer_id = azurerm_lb.fgt-external-lb.id
+  name            = "External-LB-BackEndAddressPool"
+}
+
+# Internal Load Balancer
+# Create an Internal Load Balancer
+resource "azurerm_lb" "internal-lb" {
+  name = "Internal-LB"
+  location = azurerm_resource_group.azure-hub-resource-group.location
+  resource_group_name = azurerm_resource_group.azure-hub-resource-group.name
+  sku = "Standard"
+
+  frontend_ip_configuration {
+    name = "internal-frontend-ip"
+    subnet_id = azurerm_subnet.azure-hub-trusted.id
+    private_ip_address_allocation = "10.0.10.4"
+  }
+}
+
+resource "azurerm_lb_backend_address_pool" "internal-lb-pool" {
+  loadbalancer_id = azurerm_lb.internal-lb.id
+  name = "internal-lb-pool"
+}
+
+resource "azurerm_lb_probe" "internal-lb-probe" {
+  resource_group_name = azurerm_resource_group.azure-hub-resource-group.name
+  loadbalancer_id = azurerm_lb.internal-lb.id
+  name = "test-probe"
+  port = 80
+}
+
+resource "azurerm_lb_rule" "internal-lb-rule" {
+  resource_group_name = azurerm_resource_group.azure-hub-resource-group.name
+  loadbalancer_id = azurerm_lb.internal-lb
+  name = "test-rule"
+  protocol = "Tcp"
+  frontend_port = 80
+  backend_port = 80
+  disable_outbound_snat = true
+  frontend_ip_configuration_name = "internal-frontend-ip"
+  probe_id = azurerm_lb_probe.internal-lb-probe.id
+  backend_address_pool_ids = [azurerm_lb_backend_address_pool.my_lb_pool.id]
 }
 
 #########################################################################################

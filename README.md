@@ -1,1 +1,1 @@
-2024 - FortiGate-VM Azure - Active-Active Deployment
+#2024 - FortiGate-VM Azure - Active-Active Deployment

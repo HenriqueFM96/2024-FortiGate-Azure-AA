@@ -112,5 +112,5 @@ resource "azurerm_linux_virtual_machine" "attacker-VM" {
 
 # Data template Bash bootstrapping file - Attacker's VM
 data "template_file" "linux-attacker-vm" {
-  template = file("linux-attacker.sh")
+  template = file("00-linux-attacker.sh")
 }

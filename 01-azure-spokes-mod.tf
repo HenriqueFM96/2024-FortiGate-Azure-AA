@@ -6,7 +6,7 @@
 #########################################################################################
 
 resource "azurerm_route_table" "spoke_a-rt00" {
-  name                          = "Spoke_A-RouteTable-00"
+  name                          = "Spoke_A-RouteTable-01"
   location                      = azurerm_resource_group.azure-spoke_A-resource-group.location
   resource_group_name           = azurerm_resource_group.azure-spoke_A-resource-group.name
   disable_bgp_route_propagation = true
@@ -15,14 +15,14 @@ resource "azurerm_route_table" "spoke_a-rt00" {
     name           = "default"
     address_prefix = "0.0.0.0/0"
     next_hop_type  = "VirtualAppliance"
-    next_hop_in_ip_address = "10.0.3.4"
+    next_hop_in_ip_address = var.hub-ilb-ip-address
   }
   
   route {
-    name           = "to-spoke_A-01"
-    address_prefix = "172.16.1.0/24"
+    name           = "to-spoke_A-02"
+    address_prefix = "172.16.2.0/24"
     next_hop_type  = "VirtualAppliance"
-    next_hop_in_ip_address = "10.0.3.4"
+    next_hop_in_ip_address = var.hub-ilb-ip-address
   }
 
   tags = {
@@ -37,7 +37,7 @@ resource "azurerm_subnet_route_table_association" "spoke_a-rt-assoc-00" {
 }
 
 resource "azurerm_route_table" "spoke_a-rt01" {
-  name                          = "${var.TAG_Spoke_B}-RouteTable-01"
+  name                          = "${var.TAG_Spoke_B}-RouteTable-02"
   location                      = azurerm_resource_group.azure-spoke_A-resource-group.location
   resource_group_name           = azurerm_resource_group.azure-spoke_A-resource-group.name
   disable_bgp_route_propagation = true
@@ -46,14 +46,14 @@ resource "azurerm_route_table" "spoke_a-rt01" {
     name           = "default"
     address_prefix = "0.0.0.0/0"
     next_hop_type  = "VirtualAppliance"
-    next_hop_in_ip_address = "10.0.3.4"
+    next_hop_in_ip_address = var.hub-ilb-ip-address
   }
   
   route {
-    name           = "to-spoke_A-00"
-    address_prefix = "172.16.0.0/24"
+    name           = "to-spoke_A-01"
+    address_prefix = "172.16.1.0/24"
     next_hop_type  = "VirtualAppliance"
-    next_hop_in_ip_address = "10.0.3.4"
+    next_hop_in_ip_address = var.hub-ilb-ip-address
   }
 
   tags = {
@@ -81,7 +81,7 @@ resource "azurerm_route_table" "spoke_b-rt" {
     name           = "default"
     address_prefix = "0.0.0.0/0"
     next_hop_type  = "VirtualAppliance"
-    next_hop_in_ip_address = "10.0.3.4"
+    next_hop_in_ip_address = var.hub-ilb-ip-address
   }
   
   tags = {

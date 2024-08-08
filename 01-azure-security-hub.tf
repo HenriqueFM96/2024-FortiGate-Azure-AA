@@ -176,7 +176,13 @@ resource "azurerm_lb_backend_address_pool_address" "internal-lb-pool-address" {
   name                    = "internal-lb-pool-address"
   backend_address_pool_id = azurerm_lb_backend_address_pool.internal-lb-pool.id
   virtual_network_id      = data.azurerm_virtual_network.internal-lb-vnet.id
-  ip_address              = ["${var.hub-fgt_A-internal-ip-address},${var.hub-fgt_B-internal-ip-address}"]
+}
+
+# Associate Network Interface to the Backend Pool of the Load Balancer
+resource "azurerm_network_interface_backend_address_pool_association" "internal-lb-address-assoc" {
+  network_interface_id = [azurerm_network_interface.fgt-a-port2.id,azurerm_network_interface.fgt-b-port2.id]
+  ip_configuration_name = "ipconfig"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.internal-lb-pool.id
 }
 
 resource "azurerm_lb_probe" "internal-lb-probe" {

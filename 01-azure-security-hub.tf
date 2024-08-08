@@ -147,7 +147,7 @@ resource "azurerm_lb_backend_address_pool_address" "internal-lb-pool-address" {
 
 # Associate Network Interface to the Backend Pool of the Load Balancer
 resource "azurerm_network_interface_backend_address_pool_association" "internal-lb-address-assoc" {
-  network_interface_id = azurerm_network_interface.fgt-a-port2.id
+  network_interface_id = [azurerm_network_interface.fgt-a-port2.id,azurerm_network_interface.fgt-b-port2.id]
   ip_configuration_name = "ipconfig"
   backend_address_pool_id = azurerm_lb_backend_address_pool.internal-lb-pool.id
 }
@@ -236,5 +236,59 @@ resource "azurerm_network_interface" "fgt-a-port2" {
 
 resource "azurerm_network_interface_security_group_association" "fgt-port2-nsg" {
   network_interface_id      = azurerm_network_interface.fgt-a-port2.id
+  network_security_group_id = azurerm_network_security_group.azure-hub-sg.id
+}
+
+#######################
+#FORTIGATE-VM MEMBER B#
+#######################
+
+// FGT-B Network Interface port1
+resource "azurerm_network_interface" "fgt-b-port1" {
+  name                = "fgt-B-port1"
+  location             = var.sec-hub-location
+  resource_group_name = azurerm_resource_group.azure-hub-resource-group.name
+  
+  timeouts {
+    delete = "5m"
+  }
+
+  ip_configuration {
+    name                          = "ipconfigb1"
+    subnet_id                     = azurerm_subnet.azure-hub-untrusted.id
+    private_ip_address_allocation = "Static"
+    private_ip_address = var.hub-fgt_B-external-ip-address
+    primary                       = true
+  }
+  tags = {
+    environment = "Terraform FortiGate AA"
+  }
+}
+
+resource "azurerm_network_interface_security_group_association" "fgt-b-port1-nsg" {
+  network_interface_id      = azurerm_network_interface.fgt-b-port1.id
+  network_security_group_id = azurerm_network_security_group.azure-hub-sg.id
+}
+
+resource "azurerm_network_interface" "fgt-b-port2" {
+  name                 = "fgt-B-port2"
+  location             = var.sec-hub-location
+  resource_group_name  = azurerm_resource_group.azure-hub-resource-group.name
+  enable_ip_forwarding = true
+
+  ip_configuration {
+    name                          = "ipconfigb2"
+    subnet_id                     = azurerm_subnet.azure-hub-trusted.id
+    private_ip_address_allocation = "Static"
+    private_ip_address = var.hub-fgt_B-internal-ip-address
+  }
+
+  tags = {
+    environment = "Terraform FortiGate AA"
+  }
+}
+
+resource "azurerm_network_interface_security_group_association" "fgt-b-port2-nsg" {
+  network_interface_id      = azurerm_network_interface.fgt-b-port2.id
   network_security_group_id = azurerm_network_security_group.azure-hub-sg.id
 }

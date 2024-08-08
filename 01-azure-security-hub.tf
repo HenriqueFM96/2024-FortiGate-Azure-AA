@@ -100,7 +100,7 @@ resource "azurerm_lb" "internal-lb" {
   frontend_ip_configuration {
     name = "internal-frontend-ip"
     subnet_id = azurerm_subnet.azure-hub-trusted.id
-    private_ip_address_allocation = "10.0.10.4"
+    private_ip_address_allocation = "Static"
   }
 }
 

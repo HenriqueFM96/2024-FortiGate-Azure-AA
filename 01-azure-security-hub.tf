@@ -84,7 +84,7 @@ resource "azurerm_lb" "fgt-external-lb" {
   sku = "Standard"
 
   frontend_ip_configuration {
-    name                 = "PublicIPAddress"
+    name                 = "FGT-PublicIPAddress"
     public_ip_address_id = azurerm_public_ip.fgt-lb-pip.id
   }
 }
@@ -92,11 +92,6 @@ resource "azurerm_lb" "fgt-external-lb" {
 resource "azurerm_lb_backend_address_pool" "external-lb-backend-pool" {
   loadbalancer_id = azurerm_lb.fgt-external-lb.id
   name            = "External-LB-BackEndAddressPool"
-}
-
-resource "azurerm_lb_backend_address_pool_address" "external-lb-pool-address" {
-  name                    = "external-lb-pool-address"
-  backend_address_pool_id = azurerm_lb_backend_address_pool.external-lb-backend-pool.id
 }
 
 resource "azurerm_lb_probe" "external-lb-probe" {
@@ -112,7 +107,7 @@ resource "azurerm_lb_rule" "external-lb-rule" {
   frontend_port = 0
   backend_port = 0
   disable_outbound_snat = true
-  frontend_ip_configuration_name = "internal-frontend-ip"
+  frontend_ip_configuration_name = "FGT-PublicIPAddress"
   probe_id = azurerm_lb_probe.external-lb-probe.id
   backend_address_pool_ids = [azurerm_lb_backend_address_pool.external-lb-backend-pool.id]
 }
@@ -144,13 +139,13 @@ resource "azurerm_lb_backend_address_pool" "internal-lb-pool" {
 # Associate Network Interface to the Backend Pool of the Load Balancer
 resource "azurerm_network_interface_backend_address_pool_association" "internal-lb-address-assoc-fgt-a2" {
   network_interface_id = azurerm_network_interface.fgt-a-port2.id
-  ip_configuration_name = "fgt-A-port2"
+  ip_configuration_name = "ipconfig-fgt-a-port2"
   backend_address_pool_id = azurerm_lb_backend_address_pool.internal-lb-pool.id
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "internal-lb-address-assoc-fgt-b2" {
   network_interface_id = azurerm_network_interface.fgt-b-port2.id
-  ip_configuration_name = "fgt-B-port2"
+  ip_configuration_name = "ipconfig-fgt-b-port2"
   backend_address_pool_id = azurerm_lb_backend_address_pool.internal-lb-pool.id
 }
 
@@ -200,7 +195,7 @@ resource "azurerm_network_interface" "fgt-a-port1" {
   }
 
   ip_configuration {
-    name                          = "ipconfig1"
+    name                          = "ipconfig-fgt-a-port1"
     subnet_id                     = azurerm_subnet.azure-hub-untrusted.id
     private_ip_address_allocation = "Static"
     private_ip_address = var.hub-fgt_A-external-ip-address
@@ -225,7 +220,7 @@ resource "azurerm_network_interface" "fgt-a-port2" {
   enable_ip_forwarding = true
 
   ip_configuration {
-    name                          = "ipconfig1"
+    name                          = "ipconfig-fgt-a-port2"
     subnet_id                     = azurerm_subnet.azure-hub-trusted.id
     private_ip_address_allocation = "Static"
     private_ip_address = var.hub-fgt_A-internal-ip-address
@@ -256,7 +251,7 @@ resource "azurerm_network_interface" "fgt-b-port1" {
   }
 
   ip_configuration {
-    name                          = "ipconfigb1"
+    name                          = "ipconfig-fgt-b-port1"
     subnet_id                     = azurerm_subnet.azure-hub-untrusted.id
     private_ip_address_allocation = "Static"
     private_ip_address = var.hub-fgt_B-external-ip-address
@@ -279,7 +274,7 @@ resource "azurerm_network_interface" "fgt-b-port2" {
   enable_ip_forwarding = true
 
   ip_configuration {
-    name                          = "ipconfigb2"
+    name                          = "ipconfig-fgt-b-port2"
     subnet_id                     = azurerm_subnet.azure-hub-trusted.id
     private_ip_address_allocation = "Static"
     private_ip_address = var.hub-fgt_B-internal-ip-address

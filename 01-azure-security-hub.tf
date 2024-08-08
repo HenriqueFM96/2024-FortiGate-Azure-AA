@@ -94,22 +94,92 @@ resource "azurerm_lb_backend_address_pool" "external-lb-backend-pool" {
   name            = "External-LB-BackEndAddressPool"
 }
 
+# Associate Network Interface to the Backend Pool of the External Load Balancer
+resource "azurerm_network_interface_backend_address_pool_association" "external-lb-address-assoc-fgt-a1" {
+  network_interface_id = azurerm_network_interface.fgt-a-port1.id
+  ip_configuration_name = "ipconfig-fgt-a-port1"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.external-lb-backend-pool.id
+}
+
+resource "azurerm_network_interface_backend_address_pool_association" "external-lb-address-assoc-fgt-b1" {
+  network_interface_id = azurerm_network_interface.fgt-b-port1.id
+  ip_configuration_name = "ipconfig-fgt-b-port1"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.external-lb-backend-pool.id
+}
+
+
 resource "azurerm_lb_probe" "external-lb-probe" {
   loadbalancer_id = azurerm_lb.fgt-external-lb.id
   name = "test-probe"
   port = 8008
 }
 
-resource "azurerm_lb_rule" "external-lb-rule" {
+resource "azurerm_lb_rule" "external-lb-rule-1" {
   loadbalancer_id = azurerm_lb.fgt-external-lb.id
-  name = "fwd-all"
-  protocol = "All"
-  frontend_port = 0
-  backend_port = 0
+  name = "ingress-http-80"
+  protocol = "Tcp"
+  frontend_port = 80
+  backend_port = 80
   disable_outbound_snat = true
   frontend_ip_configuration_name = "FGT-PublicIPAddress"
   probe_id = azurerm_lb_probe.external-lb-probe.id
   backend_address_pool_ids = [azurerm_lb_backend_address_pool.external-lb-backend-pool.id]
+}
+
+resource "azurerm_lb_rule" "external-lb-rule-2" {
+  loadbalancer_id = azurerm_lb.fgt-external-lb.id
+  name = "ingress-UDP-10551"
+  protocol = "Udp"
+  frontend_port = 10551
+  backend_port = 10551
+  disable_outbound_snat = true
+  frontend_ip_configuration_name = "FGT-PublicIPAddress"
+  probe_id = azurerm_lb_probe.external-lb-probe.id
+  backend_address_pool_ids = [azurerm_lb_backend_address_pool.external-lb-backend-pool.id]
+}
+
+resource "azurerm_lb_nat_rule" "ELB-NAT-SSH-FGT-A-rule" {
+  resource_group_name            = azurerm_resource_group.azure-hub-resource-group.name
+  loadbalancer_id                = azurerm_lb.fgt-external-lb.id
+  name                           = "FGT-A-SSH"
+  protocol                       = "Tcp"
+  frontend_port                  = 50030
+  backend_port                   = 22
+  frontend_ip_configuration_name = "PublicIPAddress"
+  #backend_address_pool_id        = azurerm_lb_backend_address_pool.external-lb-backend-pool.id
+}
+
+resource "azurerm_lb_nat_rule" "ELB-NAT-SSH-FGT-B-rule" {
+  resource_group_name            = azurerm_resource_group.azure-hub-resource-group.name
+  loadbalancer_id                = azurerm_lb.fgt-external-lb.id
+  name                           = "FGT-B-SSH"
+  protocol                       = "Tcp"
+  frontend_port                  = 50031
+  backend_port                   = 22
+  frontend_ip_configuration_name = "PublicIPAddress"
+  #backend_address_pool_id        = azurerm_lb_backend_address_pool.external-lb-backend-pool.id
+}
+
+resource "azurerm_lb_nat_rule" "ELB-NAT-HTTPS-FGT-A-rule" {
+  resource_group_name            = azurerm_resource_group.azure-hub-resource-group.name
+  loadbalancer_id                = azurerm_lb.fgt-external-lb.id
+  name                           = "FGT-A-HTTPS"
+  protocol                       = "Tcp"
+  frontend_port                  = 40030
+  backend_port                   = 443
+  frontend_ip_configuration_name = "PublicIPAddress"
+  #backend_address_pool_id        = azurerm_lb_backend_address_pool.external-lb-backend-pool.id
+}
+
+resource "azurerm_lb_nat_rule" "ELB-NAT-HTTPS-FGT-B-rule" {
+  resource_group_name            = azurerm_resource_group.azure-hub-resource-group.name
+  loadbalancer_id                = azurerm_lb.fgt-external-lb.id
+  name                           = "FGT-B-HTTPS"
+  protocol                       = "Tcp"
+  frontend_port                  = 40031
+  backend_port                   = 443
+  frontend_ip_configuration_name = "PublicIPAddress"
+  #backend_address_pool_id        = azurerm_lb_backend_address_pool.external-lb-backend-pool.id
 }
 
 #############################################################################

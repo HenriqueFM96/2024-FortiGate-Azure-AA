@@ -1,4 +1,4 @@
-/*
+
 # REMOVE THIS COMMENT TO RUN PROPERLY 
 
 #########################################################################################
@@ -130,4 +130,3 @@ resource "azurerm_virtual_network_peering" "vnet-HUB-to-SpokeB" {
   remote_virtual_network_id = azurerm_virtual_network.azure-spoke_B-vnet.id
 }
 
-*/

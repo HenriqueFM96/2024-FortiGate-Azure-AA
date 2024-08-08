@@ -65,6 +65,9 @@ resource "azurerm_subnet" "azure-hub-trusted" {
 #                                  Azure Load Balancers                                 #
 #########################################################################################
 
+#############################################################################
+#                        EXTERNAL LOAD BALANCER CONFIG                      #
+#############################################################################
 # External Load Balancer
 resource "azurerm_public_ip" "fgt-lb-pip" {
   name                = "FortiGate-LB-PIP"
@@ -90,6 +93,49 @@ resource "azurerm_lb_backend_address_pool" "external-lb-backend-pool" {
   name            = "External-LB-BackEndAddressPool"
 }
 
+data "azurerm_virtual_network" "external-lb-vnet" {
+  name                = "external-lb-vnet"
+  resource_group_name = azurerm_resource_group.azure-hub-resource-group.name
+}
+
+data "azurerm_lb" "external-lb-specs" {
+  name                = "external-lb-specs"
+  resource_group_name = "external-lb-specs"
+}
+
+data "azurerm_lb_backend_address_pool" "external-lb-backend-data" {
+  name            = "external-lb-backend-data"
+  loadbalancer_id = data.azurerm_lb.external-lb-specs.id
+}
+
+resource "azurerm_lb_backend_address_pool_address" "external-lb-pool-address" {
+  name                    = "external-lb-pool-address"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.external-lb-pool.id
+  virtual_network_id      = data.azurerm_virtual_network.external-lb-vnet.id
+  ip_address              = [var.hub-fgt_A-external-ip-address,var.hub-fgt_B-external-ip-address]
+}
+
+resource "azurerm_lb_probe" "external-lb-probe" {
+  loadbalancer_id = azurerm_lb.fgt-external-lb.id
+  name = "test-probe"
+  port = 8008
+}
+
+resource "azurerm_lb_rule" "external-lb-rule" {
+  loadbalancer_id = azurerm_lb.fgt-external-lb.id
+  name = "fwd-all"
+  protocol = "All"
+  frontend_port = 0
+  backend_port = 0
+  disable_outbound_snat = true
+  frontend_ip_configuration_name = "internal-frontend-ip"
+  probe_id = azurerm_lb_probe.external-lb-probe.id
+  backend_address_pool_ids = [azurerm_lb_backend_address_pool.external-lb-backend-pool.id]
+}
+
+#############################################################################
+#                   INTERNAL LOAD BALANCER CONFIG                           #
+#############################################################################
 # Internal Load Balancer
 # Create an Internal Load Balancer
 resource "azurerm_lb" "internal-lb" {
@@ -111,18 +157,40 @@ resource "azurerm_lb_backend_address_pool" "internal-lb-pool" {
   name = "internal-lb-pool"
 }
 
+data "azurerm_virtual_network" "internal-lb-vnet" {
+  name                = "internal-lb-vnet"
+  resource_group_name = azurerm_resource_group.azure-hub-resource-group.name
+}
+
+data "azurerm_lb" "internal-lb-specs" {
+  name                = "internal-lb-specs"
+  resource_group_name = "internal-lb-specs"
+}
+
+data "azurerm_lb_backend_address_pool" "internal-lb-backend-data" {
+  name            = "internal-lb-backend-data"
+  loadbalancer_id = data.azurerm_lb.internal-lb-specs.id
+}
+
+resource "azurerm_lb_backend_address_pool_address" "internal-lb-pool-address" {
+  name                    = "internal-lb-pool-address"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.internal-lb-pool.id
+  virtual_network_id      = data.azurerm_virtual_network.internal-lb-vnet.id
+  ip_address              = [var.hub-fgt_A-internal-ip-address,var.hub-fgt_B-internal-ip-address]
+}
+
 resource "azurerm_lb_probe" "internal-lb-probe" {
   loadbalancer_id = azurerm_lb.internal-lb.id
   name = "test-probe"
-  port = 80
+  port = 8008
 }
 
 resource "azurerm_lb_rule" "internal-lb-rule" {
   loadbalancer_id = azurerm_lb.internal-lb.id
-  name = "test-rule"
-  protocol = "Tcp"
-  frontend_port = 80
-  backend_port = 80
+  name = "fwd-all"
+  protocol = "All"
+  frontend_port = 0
+  backend_port = 0
   disable_outbound_snat = true
   frontend_ip_configuration_name = "internal-frontend-ip"
   probe_id = azurerm_lb_probe.internal-lb-probe.id

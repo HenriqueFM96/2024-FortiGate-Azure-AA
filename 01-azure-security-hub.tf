@@ -176,7 +176,7 @@ resource "azurerm_lb_backend_address_pool_address" "internal-lb-pool-address" {
   name                    = "internal-lb-pool-address"
   backend_address_pool_id = azurerm_lb_backend_address_pool.internal-lb-pool.id
   virtual_network_id      = data.azurerm_virtual_network.internal-lb-vnet.id
-  ip_address              = [var.hub-fgt_A-internal-ip-address,var.hub-fgt_B-internal-ip-address]
+  ip_address              = ["${var.hub-fgt_A-internal-ip-address},${var.hub-fgt_B-internal-ip-address}"]
 }
 
 resource "azurerm_lb_probe" "internal-lb-probe" {

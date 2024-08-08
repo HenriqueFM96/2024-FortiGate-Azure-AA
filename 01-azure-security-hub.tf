@@ -1,4 +1,4 @@
-
+/*
 # REMOVE THIS COMMENT TO RUN PROPERLY 
 
 
@@ -110,15 +110,13 @@ resource "azurerm_lb_backend_address_pool" "internal-lb-pool" {
 }
 
 resource "azurerm_lb_probe" "internal-lb-probe" {
-  resource_group_name = azurerm_resource_group.azure-hub-resource-group.name
   loadbalancer_id = azurerm_lb.internal-lb.id
   name = "test-probe"
   port = 80
 }
 
 resource "azurerm_lb_rule" "internal-lb-rule" {
-  resource_group_name = azurerm_resource_group.azure-hub-resource-group.name
-  loadbalancer_id = azurerm_lb.internal-lb
+  loadbalancer_id = azurerm_lb.internal-lb.id
   name = "test-rule"
   protocol = "Tcp"
   frontend_port = 80
@@ -195,3 +193,4 @@ resource "azurerm_network_interface_security_group_association" "fgt-port2-nsg" 
   network_interface_id      = azurerm_network_interface.fgtport2.id
   network_security_group_id = azurerm_network_security_group.azure-hub-sg.id
 }
+*/

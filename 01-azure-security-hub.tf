@@ -124,7 +124,7 @@ resource "azurerm_lb_rule" "internal-lb-rule" {
   disable_outbound_snat = true
   frontend_ip_configuration_name = "internal-frontend-ip"
   probe_id = azurerm_lb_probe.internal-lb-probe.id
-  backend_address_pool_ids = [azurerm_lb_backend_address_pool.my_lb_pool.id]
+  backend_address_pool_ids = [azurerm_lb_backend_address_pool.internal-lb-pool.id]
 }
 
 #########################################################################################

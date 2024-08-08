@@ -70,6 +70,7 @@ resource "azurerm_public_ip" "fgt-lb-pip" {
   name                = "FortiGate-LB-PIP"
   location            = azurerm_resource_group.azure-hub-resource-group.location
   resource_group_name = azurerm_resource_group.azure-hub-resource-group.name
+  sku = "Standard"
   allocation_method   = "Static"
 }
 
@@ -101,7 +102,7 @@ resource "azurerm_lb" "internal-lb" {
     name = "internal-frontend-ip"
     subnet_id = azurerm_subnet.azure-hub-trusted.id
     private_ip_address_allocation = "Static"
-    private_ip_address = "10.0.10.40"
+    private_ip_address = var.hub-ilb-ip-address
   }
 }
 
@@ -158,7 +159,8 @@ resource "azurerm_network_interface" "fgtport1" {
   ip_configuration {
     name                          = "ipconfig1"
     subnet_id                     = azurerm_subnet.azure-hub-untrusted.id
-    private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "Static"
+    private_ip_address = var.hub-fgt_A-external-ip-address
     primary                       = true
     public_ip_address_id          = azurerm_public_ip.FGTPublicIp.id
   }
@@ -173,8 +175,8 @@ resource "azurerm_network_interface_security_group_association" "fgt-port1-nsg" 
   network_security_group_id = azurerm_network_security_group.azure-hub-sg.id
 }
 
-resource "azurerm_network_interface" "fgtport2" {
-  name                 = "fgtport2"
+resource "azurerm_network_interface" "fgt-a-port2" {
+  name                 = "fgt-A-port2"
   location             = var.location
   resource_group_name  = azurerm_resource_group.azure-hub-resource-group.name
   enable_ip_forwarding = true
@@ -182,7 +184,8 @@ resource "azurerm_network_interface" "fgtport2" {
   ip_configuration {
     name                          = "ipconfig1"
     subnet_id                     = azurerm_subnet.azure-hub-trusted.id
-    private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "Static"
+    private_ip_address = var.hub-fgt_A-internal-ip-address
   }
 
   tags = {

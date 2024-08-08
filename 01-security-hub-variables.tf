@@ -108,6 +108,31 @@ variable "hub-privatecidr" {
   default = "10.0.10.0/24"
 }
 
+# Internal Load Balancer IP
+variable "hub-ilb-ip-address" {
+  default = "10.0.10.4"
+}
+
+# FortiGate Member A - External IP
+variable "hub-fgt_A-external-ip-address" {
+  default = "10.0.0.10"
+}
+
+# FortiGate Member A - Internal IP
+variable "hub-fgt_A-internal-ip-address" {
+  default = "10.0.10.10"
+}
+
+# FortiGate Member B - External IP
+variable "hub-fgt_B-external-ip-address" {
+  default = "10.0.0.11"
+}
+
+# FortiGate Member B - Internal IP
+variable "hub-fgt_B-internal-ip-address" {
+  default = "10.0.10.11"
+}
+
 variable "bootstrap-fgtvm" {
   // Change to your own path
   type    = string

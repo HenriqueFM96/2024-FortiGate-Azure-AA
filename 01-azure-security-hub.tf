@@ -93,26 +93,9 @@ resource "azurerm_lb_backend_address_pool" "external-lb-backend-pool" {
   name            = "External-LB-BackEndAddressPool"
 }
 
-data "azurerm_virtual_network" "external-lb-vnet" {
-  name                = "external-lb-vnet"
-  resource_group_name = azurerm_resource_group.azure-hub-resource-group.name
-}
-
-data "azurerm_lb" "external-lb-specs" {
-  name                = "external-lb-specs"
-  resource_group_name = "external-lb-specs"
-}
-
-data "azurerm_lb_backend_address_pool" "external-lb-backend-data" {
-  name            = "external-lb-backend-data"
-  loadbalancer_id = data.azurerm_lb.external-lb-specs.id
-}
-
 resource "azurerm_lb_backend_address_pool_address" "external-lb-pool-address" {
   name                    = "external-lb-pool-address"
-  backend_address_pool_id = azurerm_lb_backend_address_pool.external-lb-pool.id
-  virtual_network_id      = data.azurerm_virtual_network.external-lb-vnet.id
-  ip_address              = [var.hub-fgt_A-external-ip-address,var.hub-fgt_B-external-ip-address]
+  backend_address_pool_id = azurerm_lb_backend_address_pool.external-lb-backend-pool.id
 }
 
 resource "azurerm_lb_probe" "external-lb-probe" {
@@ -157,26 +140,16 @@ resource "azurerm_lb_backend_address_pool" "internal-lb-pool" {
   name = "internal-lb-pool"
 }
 
-data "azurerm_virtual_network" "internal-lb-vnet" {
-  name                = "internal-lb-vnet"
-  resource_group_name = azurerm_resource_group.azure-hub-resource-group.name
-}
-
-data "azurerm_lb" "internal-lb-specs" {
-  name                = "internal-lb-specs"
-  resource_group_name = "internal-lb-specs"
-}
-
-data "azurerm_lb_backend_address_pool" "internal-lb-backend-data" {
-  name            = "internal-lb-backend-data"
-  loadbalancer_id = data.azurerm_lb.internal-lb-specs.id
-}
-
 resource "azurerm_lb_backend_address_pool_address" "internal-lb-pool-address" {
   name                    = "internal-lb-pool-address"
   backend_address_pool_id = azurerm_lb_backend_address_pool.internal-lb-pool.id
-  virtual_network_id      = data.azurerm_virtual_network.internal-lb-vnet.id
-  ip_address              = [var.hub-fgt_A-internal-ip-address,var.hub-fgt_B-internal-ip-address]
+}
+
+# Associate Network Interface to the Backend Pool of the Load Balancer
+resource "azurerm_network_interface_backend_address_pool_association" "internal-lb-address-assoc" {
+  network_interface_id = azurerm_network_interface.fgt-a-port2.id
+  ip_configuration_name = "ipconfig"
+  backend_address_pool_id = azurerm_lb_backend_address_pool.internal-lb-pool.id
 }
 
 resource "azurerm_lb_probe" "internal-lb-probe" {

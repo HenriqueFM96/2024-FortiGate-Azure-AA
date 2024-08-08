@@ -120,7 +120,7 @@ resource "azurerm_network_security_group" "azure-spoke_B-sg" {
 #########################################################################################
 #                                vNet Peerings Creation                                 #
 #########################################################################################
-
+/*
 resource "azurerm_virtual_network_peering" "vnet-peering-spoke_A" {
   name                      = "peer-${var.TAG_Spoke_A}-to-${var.TAG_Spoke_B}"
   resource_group_name       = azurerm_resource_group.azure-spoke_A-resource-group.name
@@ -134,7 +134,7 @@ resource "azurerm_virtual_network_peering" "vnet-HUB-to-SpokeA" {
   virtual_network_name      = azurerm_virtual_network.azure-spoke_B-vnet.name
   remote_virtual_network_id = azurerm_virtual_network.azure-spoke_A-vnet.id
 }
-
+*/
 #########################################################################################
 #                                VMs Creation Spoke A VM 01                             #
 #########################################################################################

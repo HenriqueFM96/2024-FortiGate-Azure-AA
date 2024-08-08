@@ -147,8 +147,8 @@ resource "azurerm_public_ip" "FGTPublicIp" {
 }
 
 // FGT Network Interface port1
-resource "azurerm_network_interface" "fgtport1" {
-  name                = "fgtport1"
+resource "azurerm_network_interface" "fgt-a-port1" {
+  name                = "fgt-A-port1"
   location            = var.location
   resource_group_name = azurerm_resource_group.azure-hub-resource-group.name
   
@@ -171,7 +171,7 @@ resource "azurerm_network_interface" "fgtport1" {
 }
 
 resource "azurerm_network_interface_security_group_association" "fgt-port1-nsg" {
-  network_interface_id      = azurerm_network_interface.fgtport1.id
+  network_interface_id      = azurerm_network_interface.fgt-a-port1.id
   network_security_group_id = azurerm_network_security_group.azure-hub-sg.id
 }
 

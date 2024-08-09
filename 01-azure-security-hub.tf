@@ -238,9 +238,9 @@ resource "azurerm_lb_rule" "internal-lb-rule" {
 }
 
 #########################################################################################
-#                                FortiGate-VM Interfaces                                #
+#                             FortiGate-VM - MEMBER A Interfaces                        #
 #########################################################################################
-
+/*
 // Allocated Public IP
 resource "azurerm_public_ip" "FGTPublicIp" {
   name                = "FGTPublicIP"
@@ -253,6 +253,7 @@ resource "azurerm_public_ip" "FGTPublicIp" {
     environment = "Terraform Single FortiGate PIP"
   }
 }
+*/
 
 // FGT Network Interface port1
 resource "azurerm_network_interface" "fgt-a-port1" {
@@ -270,11 +271,11 @@ resource "azurerm_network_interface" "fgt-a-port1" {
     private_ip_address_allocation = "Static"
     private_ip_address = var.hub-fgt_A-external-ip-address
     primary                       = true
-    public_ip_address_id          = azurerm_public_ip.FGTPublicIp.id
+    #public_ip_address_id          = azurerm_public_ip.FGTPublicIp.id
   }
 
   tags = {
-    environment = "Terraform Single FortiGate"
+    environment = "Terraform FortiGate AA"
   }
 }
 
@@ -297,7 +298,7 @@ resource "azurerm_network_interface" "fgt-a-port2" {
   }
 
   tags = {
-    environment = "Terraform Single FortiGate"
+    environment = "Terraform FortiGate AA"
   }
 }
 
@@ -306,9 +307,9 @@ resource "azurerm_network_interface_security_group_association" "fgt-port2-nsg" 
   network_security_group_id = azurerm_network_security_group.azure-hub-sg.id
 }
 
-#######################
-#FORTIGATE-VM MEMBER B#
-#######################
+#########################################################################################
+#                             FortiGate-VM - MEMBER B Interfaces                        #
+#########################################################################################
 
 // FGT-B Network Interface port1
 resource "azurerm_network_interface" "fgt-b-port1" {

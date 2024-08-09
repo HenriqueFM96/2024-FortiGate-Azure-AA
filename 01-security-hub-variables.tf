@@ -156,5 +156,5 @@ variable "fgtversion" {
 
 variable "fortigate-vm-size" {
   type = string
-  default = "Standard_B1s"
+  default = "Standard_F2"
 }

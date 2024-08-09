@@ -44,7 +44,7 @@ resource "azurerm_virtual_machine" "custompassivefgtvm" {
   }
 
   os_profile {
-    computer_name  = "customactivefgt"
+    computer_name  = "custom-fgt-member-b"
     admin_username = var.fgt-adminusername
     admin_password = var.fgt-adminpassword
     custom_data = templatefile("${var.bootstrap-fgt-vm-B}", {
@@ -79,7 +79,7 @@ resource "azurerm_virtual_machine" "custompassivefgtvm" {
 
 resource "azurerm_virtual_machine" "passivefgtvm" {
   count                        = var.custom ? 0 : 1
-  name                         = "activefgt"
+  name                         = "fgt-member-b"
   location                     = var.location
   resource_group_name          = azurerm_resource_group.azure-hub-resource-group.name
   network_interface_ids        = [azurerm_network_interface.fgt-b-port1.id, azurerm_network_interface.fgt-b-port2.id]
@@ -121,7 +121,7 @@ resource "azurerm_virtual_machine" "passivefgtvm" {
   }
 
   os_profile {
-    computer_name  = "activefgt"
+    computer_name  = "fgt-member-B"
     admin_username = var.fgt-adminusername
     admin_password = var.fgt-adminpassword
     custom_data = templatefile("${var.bootstrap-fgt-vm-B}", {

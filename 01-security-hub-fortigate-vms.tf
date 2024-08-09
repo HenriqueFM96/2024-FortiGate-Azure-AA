@@ -1,4 +1,5 @@
-resource "azurerm_image" "custom" {
+/*
+resource "azurerm_image" "ooocustom" {
   count               = var.custom ? 1 : 0
   name                = var.custom_image_name
   resource_group_name = var.custom_image_resource_group_name
@@ -115,3 +116,4 @@ resource "azurerm_virtual_machine" "FGT-B" {
     environment = "FortiGate AA - Member B"
   }
 }
+*/

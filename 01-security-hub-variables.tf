@@ -143,6 +143,11 @@ variable "license-MemberA" {
   default = "FGT-VM-MemberA.txt"
 }
 
+variable "license_format" {
+    type = string
+    default = "license format"
+}
+
 variable "license-MemberB" {
   // Change to your own byol license file, license.lic
   type    = string

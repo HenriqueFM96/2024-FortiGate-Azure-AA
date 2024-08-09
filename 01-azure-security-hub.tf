@@ -145,7 +145,7 @@ resource "azurerm_lb_nat_rule" "ELB-NAT-SSH-FGT-A-rule" {
   protocol                       = "Tcp"
   frontend_port                  = 50030
   backend_port                   = 22
-  frontend_ip_configuration_name = "PublicIPAddress"
+  frontend_ip_configuration_name = "FGT-PublicIPAddress"
   #backend_address_pool_id        = azurerm_lb_backend_address_pool.external-lb-backend-pool.id
 }
 
@@ -156,7 +156,7 @@ resource "azurerm_lb_nat_rule" "ELB-NAT-SSH-FGT-B-rule" {
   protocol                       = "Tcp"
   frontend_port                  = 50031
   backend_port                   = 22
-  frontend_ip_configuration_name = "PublicIPAddress"
+  frontend_ip_configuration_name = "FGT-PublicIPAddress"
   #backend_address_pool_id        = azurerm_lb_backend_address_pool.external-lb-backend-pool.id
 }
 
@@ -167,7 +167,7 @@ resource "azurerm_lb_nat_rule" "ELB-NAT-HTTPS-FGT-A-rule" {
   protocol                       = "Tcp"
   frontend_port                  = 40030
   backend_port                   = 443
-  frontend_ip_configuration_name = "PublicIPAddress"
+  frontend_ip_configuration_name = "FGT-PublicIPAddress"
   #backend_address_pool_id        = azurerm_lb_backend_address_pool.external-lb-backend-pool.id
 }
 
@@ -178,7 +178,7 @@ resource "azurerm_lb_nat_rule" "ELB-NAT-HTTPS-FGT-B-rule" {
   protocol                       = "Tcp"
   frontend_port                  = 40031
   backend_port                   = 443
-  frontend_ip_configuration_name = "PublicIPAddress"
+  frontend_ip_configuration_name = "FGT-PublicIPAddress"
   #backend_address_pool_id        = azurerm_lb_backend_address_pool.external-lb-backend-pool.id
 }
 

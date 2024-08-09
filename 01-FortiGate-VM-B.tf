@@ -28,7 +28,7 @@ resource "azurerm_virtual_machine" "custompassivefgtvm" {
   }
 
   storage_os_disk {
-    name              = "osDisk"
+    name              = "osDisk-fgt-b"
     caching           = "ReadWrite"
     managed_disk_type = "Standard_LRS"
     create_option     = "FromImage"
@@ -36,7 +36,7 @@ resource "azurerm_virtual_machine" "custompassivefgtvm" {
 
   # Log data disks
   storage_data_disk {
-    name              = "activedatadisk"
+    name              = "datadisk-fgt-b"
     managed_disk_type = "Standard_LRS"
     create_option     = "Empty"
     lun               = 0
@@ -105,7 +105,7 @@ resource "azurerm_virtual_machine" "passivefgtvm" {
 
 
   storage_os_disk {
-    name              = "osDisk"
+    name              = "osDisk-fgt-b"
     caching           = "ReadWrite"
     managed_disk_type = "Standard_LRS"
     create_option     = "FromImage"
@@ -113,7 +113,7 @@ resource "azurerm_virtual_machine" "passivefgtvm" {
 
   # Log data disks
   storage_data_disk {
-    name              = "activedatadisk"
+    name              = "datadisk-fgt-b"
     managed_disk_type = "Standard_LRS"
     create_option     = "Empty"
     lun               = 0
